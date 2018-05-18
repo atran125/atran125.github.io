@@ -1,0 +1,76 @@
+---
+title: "Final Project - McDonalds"
+author: "Andrew Tran"
+date: "May 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+  McDonald's is the world's largest restaurant chain by revenue, serving over 69 million customers daily in over 100 countries. It is the stereotypical ideal that comes to mind when one thinks of fast food, known for its hamburgers, fries, soft drinks, and other menu items. In today's current culture, with an increased focus on having a healthy lifestyle, people often disdain McDonald's for its supposed unhealtiness, its food and drink loaded with fat, grease, and sugar. But does McDonald's really deserve such a bad reputation? 
+  
+  As a person who has eaten at the UMD Stamp McDonalds an untold number of times, I decided to create this tutorial on exploring the nutrition behind the menu items sold at McDonald's. 
+  
+
+## Part 1 - Data Loading and Cleaning 
+  
+  The very first thing we must do is to retrieve the data we wish to look at and analyze. In this case, we will be using a free dataset provided by Kaggle: 
+  
+https://www.kaggle.com/mcdonalds/nutrition-facts
+
+  Once we've downloaded the dataset to our computer, let's load it up into R-Studio, along with a few basic libraries we will need. 
+  
+
+```{r loading_data}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+
+# Use the read_csv function to load the dataset into a variable we can use. 
+menu <- read_csv("C:/Users/Andrew/Desktop/College/CMSC320/Final/menu.csv")
+menu
+```
+
+
+  Now that our dataset has been loaded in R-Studio as a dataframe, we can see that it contains 260 different McDonald's menu items, each with 24 different attributes. At first glance, this dataset appears to be very well organized too, so we may not need to do much cleaning with it. Let's use colnames() to see every single attribute used in this dataframe, and find out what we can work with. 
+
+```{r col_names}
+colnames(menu)
+```
+
+
+  Hmmm. It seems we may have a problem. A large majority of these attributes possess spaces in their names. This will cause us trouble when we attempt to access or use them later, as R-Studio will not recognize them properly. Let's do our first bit of data cleaning: changing these attribute names to remove the spaces between them. To do this, we will require the clean_names function used in the janitor package. 
+  
+```{r change_attribute_names}
+# load up the janitor library 
+library(janitor)
+
+# Use the clean_names function to convert all spaces in attribute names to underscores 
+menu <- clean_names(menu)
+colnames(menu)
+```
+  
+  That's much better. 
+  
+## Part 2 - Exploratory Data Analysis (EDA)
+
+  Now that we have our data, what exactly do we wish to do with it? For most people, the most common criticisms of fast food are fat content, sodium, and calorie count. Let's modify our dataset to focus on these attributes of interest for now. 
+  
+```{r food_categories}
+# The ggplot package is extremely powerful, and is used to make a wide variety of plots in R-Studio. 
+# Let's use a pipeline (denoted by %>%) to invoke ggplot on our menu dataframe 
+
+  
+```
+
+
+
+
+
+
+   
