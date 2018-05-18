@@ -44,28 +44,45 @@ colnames(menu)
 ```
 
 
-  Hmmm. It seems we may have a problem. A large majority of these attributes possess spaces in their names. This will cause us trouble when we attempt to access or use them later, as R-Studio will not recognize them properly. Let's do our first bit of data cleaning: changing these attribute names to remove the spaces between them. To do this, we will require the clean_names function used in the janitor package. 
-  
-```{r change_attribute_names}
-# load up the janitor library 
-library(janitor)
+```{r test}
+test_menu <- select(menu, Category, Item, `Trans Fat`)
+rename(test_menu, `Trans Fat (g)`=`Trans Fat`)
+```
 
-# Use the clean_names function to convert all spaces in attribute names to underscores 
-menu <- clean_names(menu)
-colnames(menu)
+  Looks pretty good so far. There is however, one problem. Several of these attributes are missing their respective units of measurement. "% Daily Values" are easy enough to understand, but what about things like Sodium or Total Fat? What exactly does it mean if an Egg McMuffin possesses a value of 3 for Sugars and a value of 17 for Protein? We can make things clearer than this. 
+  
+  Let's add the official unit of measurement to their respective units. We can do so by using the rename function along with a pipeline. 
+  
+
+  
+```{r add_units}
+# Note that since our attribute names possess spaces, we will need to use backtabs `` in order to access them.
+# For example: `attribute name` 
+menu <- menu %>%
+  rename( `Total Fat (g)`=`Total Fat`, 
+         `Saturated Fat (g)`=`Saturated Fat`, 
+         `Trans Fat (g)`=`Trans Fat`,
+         `Cholesterol (mg)`=`Cholesterol`,
+         `Sodium (mg)`=`Sodium`,
+         `Carbohydrates (g)`=`Carbohydrates`,
+         `Dietary Fiber (g)`=`Dietary Fiber`,
+         `Sugars (g)`=`Sugars`,
+         `Protein (g)`=`Protein`)
 ```
   
-  That's much better. 
+  That's much better. Now that we have our data, what exactly do we wish to do with it? 
   
 ## Part 2 - Exploratory Data Analysis (EDA)
 
-  Now that we have our data, what exactly do we wish to do with it? For most people, the most common criticisms of fast food are fat content, sodium, and calorie count. Let's modify our dataset to focus on these attributes of interest for now. 
+  For most people, the most common criticisms of fast food are fat content, sodium, and calorie count. Let's try finding out the average values for these attributes for all food categories offered by McDonald's. 
   
-```{r food_categories}
-# The ggplot package is extremely powerful, and is used to make a wide variety of plots in R-Studio. 
-# Let's use a pipeline (denoted by %>%) to invoke ggplot on our menu dataframe 
+  First, let's use the select function to grab only the attributes we care about. 
+  
+```{r menu_select}
+menu_averages <- menu %>%
+  select(category, item, calories, total_fat, sodium, total_fat_percent_daily_value, sodium_percent_daily_value)
 
-  
+menu_averages 
 ```
 
 
