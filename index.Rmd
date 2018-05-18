@@ -24,6 +24,9 @@ https://www.kaggle.com/mcdonalds/nutrition-facts
 
   Once we've downloaded the dataset to our computer, let's load it up into R-Studio, along with a few basic libraries we will need. 
   
+  Of course, if you want to look at the official information as provided by McDonald's, you are always free to visit their official nutritional information calculator for yourself:
+  
+  
 
 ```{r loading_data}
 library(tidyverse)
@@ -68,23 +71,63 @@ menu <- menu %>%
          `Dietary Fiber (g)`=`Dietary Fiber`,
          `Sugars (g)`=`Sugars`,
          `Protein (g)`=`Protein`)
+
+colnames(menu)
 ```
   
-  That's much better. Now that we have our data, what exactly do we wish to do with it? 
   
 ## Part 2 - Exploratory Data Analysis (EDA)
 
-  For most people, the most common criticisms of fast food are fat content, sodium, and calorie count. Let's try finding out the average values for these attributes for all food categories offered by McDonald's. 
+  Now that we have our data, let try to do some analyzing, and see if we can find a few things out or two.
   
-  First, let's use the select function to grab only the attributes we care about. 
+ Let's start with something simple. For most people, the most common criticisms of fast food are high fat content, sodium, calorie count, and sugar. Let's try finding out the average values for these attributes for all food categories offered by McDonald's. 
+  
+  To do so, we can use the summarize and group_by functions. 
   
 ```{r menu_select}
 menu_averages <- menu %>%
-  select(category, item, calories, total_fat, sodium, total_fat_percent_daily_value, sodium_percent_daily_value)
+  group_by(Category) %>%
+  summarize(`Mean Calories`=mean(Calories),
+            `Mean Sodium (mg)`=mean(`Sodium (mg)`),
+            `Mean Total Fat (g)` = mean(`Total Fat (g)`),
+            `Mean Sugars (g)` = mean(`Sugars (g)`)) 
+           
 
 menu_averages 
 ```
 
+  We can go one step further than this. Let's try putting our newfound data onto plots, so we can more easily visualize our findings. To do so, we will be using the ggplot package. Plotting, or more formally "data visualization" is an extremely useful tool for any data scientist, allowing us to easily see trends or insights into dataset characteristics. 
+  
+  ggplot is an extremely versatile and useful package, designed to work well with the tidyverse set of packages. For more information and resources on this package, look here: 
+  
+  http://ggplot2.tidyverse.org/
+  https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+  
+```{r plot_averages}
+# plot mean calories 
+menu_averages %>%
+  ggplot(mapping=aes(x=Category, y=`Mean Calories`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Calories vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+
+# plot mean sodium 
+menu_averages %>%
+  ggplot(mapping=aes(x=Category, y=`Mean Sodium (mg)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Sodium (mg) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+
+# plot mean total fat  
+menu_averages %>%
+  ggplot(mapping=aes(x=Category, y=`Mean Total Fat (g)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Total Fat (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+
+# plot mean sugars
+menu_averages %>%
+  ggplot(mapping=aes(x=Category, y=`Mean Sugars (g)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Sugars (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+```
+  
+
+  This looks much nicer, and is easier to convey information to a viewer. But what exactly can we conclude? 
+We can clearly see that the top two offending categories in terms of 
 
 
 
