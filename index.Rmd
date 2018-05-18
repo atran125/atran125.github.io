@@ -162,7 +162,15 @@ menu %>%
 
 Oooooo. Now this is quite intriguing. We can see that, regardless of menu item category, as the amount of fat in a menu item increases, the more its Calories are due to the amount of fat it contains. It seems that a large number of menu items tend to however around the 0.3 - 0.4 range. But what's that there, at the very far right of the graph? Is there really some item on the McDonald's menu that actually possesses over 120 grams of fat? What on earth?
 
+I'm getting very curious now. We can see from this current plot that several McDonald's menu items possess extremely high amounts of total fat (around 50+ grams). Let's see what they are. To do so, we can use the arrange and slice functions. The arrange function sorts entities by attribute, and can sort by either increasing or decreasing value of attribute. The slice function can be used to take a look at a certain "slice" of a dataset, rather than its full contents.
 
+```{r highest_fat}
+menu %>%
+  arrange(desc(`Total Fat (g)`)) %>%
+  slice(1:10) %>%
+  ggplot(aes(x=Item, y =`Total Fat (g)`)) + geom_bar(stat="identity") + ggtitle("McDonald's Most Fattiest Menu Items") + coord_flip()
+
+```
 
 
 
