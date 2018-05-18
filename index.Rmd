@@ -40,7 +40,7 @@ menu
 ```
 
 
-  Now that our dataset has been loaded in R-Studio as a dataframe, we can see that it contains 260 different McDonald's menu items, each with 24 different attributes. At first glance, this dataset appears to be very well organized too, so we may not need to do much cleaning with it. Let's use colnames() to see every single attribute used in this dataframe, and find out what we can work with. 
+  Now that our dataset has been loaded in R-Studio as a dataframe, we can see that it contains 260 different McDonald's menu items (entities, or rows), each with 24 different attributes (columns). At first glance, this dataset appears to be very well organized too, so we may not need to do much cleaning with it. Let's use colnames() to see every single attribute used in this dataframe, and find out what we can work with. 
 
 ```{r col_names}
 colnames(menu)
@@ -77,7 +77,7 @@ colnames(menu)
   
  Let's start with something simple. For most people, the most common criticisms of fast food are high fat content, sodium, calorie count, and sugar. Let's try finding out the average values for these attributes for all food categories offered by McDonald's. 
   
-  To do so, we can use the summarize and group_by functions. 
+  To do so, we can use the summarize and group_by functions. Group_by allows use to group these menu items by a certain attribute, while summarize allows us to collapse the dataframe into a single row containing the desired attribute summaries we want (e.g. mean, median, max, min, etc.)
   
 ```{r menu_select}
 menu_averages <- menu %>%
@@ -91,38 +91,59 @@ menu_averages <- menu %>%
 menu_averages 
 ```
 
-  We can go one step further than this. Let's try putting our newfound data onto plots, so we can more easily visualize our findings. To do so, we will be using the ggplot package. Plotting, or more formally "data visualization" is an extremely useful tool for any data scientist, allowing us to easily see trends or insights into dataset characteristics. 
+
+  Oho. These numbers do appear to be quite high. But what exactly do they mean? Perhaps we are putting too much focus on raw values at this point. To understand and go one step further, let's put this in context with the % Daily Values required of a normal 2000 Calorie diet. After all, a seemingly high amount of fat, sodium, sugar may actually mean nothing if it is quit low in terms of your actual daily needs. 
+  
+  Let us again use summarize and group_by to find out our wanted percentages. One thing is missing from our original dataset however: the % daily value in regards to calories per menu item. We can add this in using the mutate function, which adds new attributes to datasets based on the result of an expression. Let us again assume we are using a 2000 Calorie Diet, as specified on today's current nutrition labels. 
+  
+```{r add_daily_calorie_percentage}
+menu <- menu %>%
+  # mutate is used to add new attributes based on the result of a given expression 
+  mutate(`Calories (% Daily Value)` = as.integer((Calories/2000) * 100))
+
+# Use summarize and group_by to obtain the average daily values we want for each item category 
+menu_averages <- menu %>%
+  group_by(Category) %>%
+  summarize(`Average Calories (% Daily Value)`=mean(`Calories (% Daily Value)`),
+            `Average Sodium (% Daily Value)`=mean(`Sodium (% Daily Value)`),
+            `Average Total Fat (% Daily Value)` = mean(`Total Fat (% Daily Value)`),
+            # In terms of nutrition, sugar falls under carbohydrates for % daily values 
+            `Average Carbohydrates (% Daily Value)` = mean(`Carbohydrates (% Daily Value)`)) 
+```
+ 
+  Let's try putting our newfound data onto plots, so we can more easily visualize our findings. To do so, we will be using the ggplot package. Plotting, or more formally "data visualization" is an extremely useful tool for any data scientist, allowing us to easily see trends or insights into dataset characteristics. 
   
   ggplot is an extremely versatile and useful package, designed to work well with the tidyverse set of packages. For more information and resources on this package, look here: 
   
   http://ggplot2.tidyverse.org/
   https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
   
-```{r plot_averages}
-# plot mean calories 
+  
+```{r plot_average_daily_values}
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Average Calories`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Calories vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Calories (% Daily Value)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Calories (% Daily Value) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean sodium 
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Average Sodium (mg)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Sodium (mg) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Sodium (% Daily Value)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Sodium (% Daily Value) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean total fat  
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Average Total Fat (g)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Total Fat (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Total Fat (% Daily Value)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Total Fat (% Daily Value) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean sugars
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Average Sugars (g)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Sugars (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Carbohydrates (% Daily Value)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Carbohydrates (% Daily Value) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 ```
-  
 
-  This looks much nicer, and is easier to convey information to a viewer. But what exactly can we conclude? 
-Clearly, we can see that the Breakfast, Chicken & Fish, and Beef & Pork are the top 3 highest categories for Average Amounts of Sodium and Total Fat, going above 900 mg and 24 grams, respectively. This isn't too unexpected. Surprisingly however, Smoothies & Shakes actually outclasses Beef & Pork when it comes to total Calories, going well over 500. The average amount of sugar for Smoothies & Shakes is also disturbingly high, averaging near 80 grams of sugar. That's equal to over 2 cans of Coca Cola. 
+Well now, this certainly isn't looking too good. We can see that Beef & Pork, Breakfast, and Chicken & Fish category menu items easily break over 40 % of one's daily sodium intake. Likewise, they hover around 40 % of a person's daily intake of fat. Somewhat unsurprisingly, Smoothies & Shakes are also extremely high in sugar, averaging around 30% of one's daily recommended amount of sugar. Could it be that McDonald's fast food deserves its reputation as unhealthy, sugary, salty, fatty goodness? 
+
+
+
 
 
 
