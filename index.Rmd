@@ -49,10 +49,9 @@ colnames(menu)
 
   Looks pretty good so far. There is however, one problem. Several of these attributes are missing their respective units of measurement. "% Daily Values" are easy enough to understand, but what about things like Sodium or Total Fat? What exactly does it mean if an Egg McMuffin possesses a value of 3 for Sugars and a value of 17 for Protein? We can make things clearer than this. 
   
-  Let's add the official unit of measurement to their respective units. We can do so by using the rename function along with a pipeline (the "%>%" symbol). The rename function is exactly as it sounds, allowing us to change the names of certain attributes. The pipeline 
+  Let's add the official unit of measurement to their respective units. We can do so by using the rename function along with a pipeline (the "%>%" symbol). 
   
 
-  
 ```{r add_units}
 # Note that since our attribute names possess spaces, we will need to use backtabs `` in order to access them.
 # For example: `attribute name` 
@@ -153,14 +152,16 @@ Well now, this certainly isn't looking too good. We can see that Beef & Pork, Br
  
 ```{r total_fat_vs_calories}
 menu <- menu %>%
-  mutate(`Ratio of Fat to Calories`= `Calories from Fat`/`Calories`)
-
+  mutate(`Percentage of Calories From Fat`= as.integer((`Calories from Fat`/`Calories`) * 100)) 
+  
 menu %>%
-  ggplot(aes(x=`Total Fat (g)`, y = `Ratio of Fat to Calories`)) + geom_point() + ggtitle("Contribution to Calories via Total Fat") + geom_smooth()
+  ggplot(aes(x=`Total Fat (g)`, y = `Percentage of Calories From Fat`)) + geom_point() + ggtitle("Percentage of Calories from Total Fat") + geom_smooth()
+
+
 ```
  
 
-Oooooo. Now this is quite intriguing. We can see that, regardless of menu item category, as the amount of fat in a menu item increases, the more its Calories are due to the amount of fat it contains. It seems that a large number of menu items tend to however around the 0.3 - 0.4 range. But what's that there, at the very far right of the graph? Is there really some item on the McDonald's menu that actually possesses over 120 grams of fat? What on earth?
+Oooooo. Now this is quite intriguing. We can see that, regardless of menu item category, as the amount of fat in a menu item increases, the more its Calories are due to the amount of fat it contains also increases, eventually peaking aroung 60%. It also seems that a large number of menu items tend to however around the 30 - 40% range. But what's that there, at the very far right of the graph? Is there really some item on the McDonald's menu that actually possesses near 120 grams of fat? What on earth?
 
 I'm getting very curious now. We can see from this current plot that several McDonald's menu items possess extremely high amounts of total fat (around 50+ grams). Let's see what they are. To do so, we can use the arrange and slice functions. The arrange function sorts entities by attribute, and can sort by either increasing or decreasing value of attribute. The slice function can be used to take a look at a certain "slice" of a dataset, rather than its full contents.
 
@@ -168,12 +169,12 @@ I'm getting very curious now. We can see from this current plot that several McD
 menu %>%
   arrange(desc(`Total Fat (g)`)) %>%
   slice(1:10) %>%
-  ggplot(aes(x=Item, y =`Total Fat (g)`)) + geom_bar(stat="identity") + ggtitle("McDonald's Most Fattiest Menu Items") + coord_flip()
+  ggplot(aes(x=Item, y =`Total Fat (g)`, fill=Category)) + geom_bar(stat="identity") + ggtitle("Top 10 Fattiest McDonald's Menu Items") + coord_flip()
 
 ```
 
 
-
+From this, we can now see just why  Breakfast and Chicken & Fish have such high values for total fat % daily value, eclipsing even Beef & Pork. Breakfast has over 7 items in the top 10 fattiest items offered on the menu, all going over 35 grams of total fat each. Chicken & Fish has a massive outlier in the form of the 40 Piece Chicken McNuggets, with almost 120 grams of total fat. 
 
 
 
