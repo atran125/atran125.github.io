@@ -47,11 +47,6 @@ colnames(menu)
 ```
 
 
-```{r test}
-test_menu <- select(menu, Category, Item, `Trans Fat`)
-rename(test_menu, `Trans Fat (g)`=`Trans Fat`)
-```
-
   Looks pretty good so far. There is however, one problem. Several of these attributes are missing their respective units of measurement. "% Daily Values" are easy enough to understand, but what about things like Sodium or Total Fat? What exactly does it mean if an Egg McMuffin possesses a value of 3 for Sugars and a value of 17 for Protein? We can make things clearer than this. 
   
   Let's add the official unit of measurement to their respective units. We can do so by using the rename function along with a pipeline. 
@@ -87,10 +82,10 @@ colnames(menu)
 ```{r menu_select}
 menu_averages <- menu %>%
   group_by(Category) %>%
-  summarize(`Mean Calories`=mean(Calories),
-            `Mean Sodium (mg)`=mean(`Sodium (mg)`),
-            `Mean Total Fat (g)` = mean(`Total Fat (g)`),
-            `Mean Sugars (g)` = mean(`Sugars (g)`)) 
+  summarize(`Average Calories`=mean(Calories),
+            `Average Sodium (mg)`=mean(`Sodium (mg)`),
+            `Average Total Fat (g)` = mean(`Total Fat (g)`),
+            `Average Sugars (g)` = mean(`Sugars (g)`)) 
            
 
 menu_averages 
@@ -106,28 +101,28 @@ menu_averages
 ```{r plot_averages}
 # plot mean calories 
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Mean Calories`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Calories vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Calories`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Calories vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean sodium 
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Mean Sodium (mg)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Sodium (mg) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Sodium (mg)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Sodium (mg) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean total fat  
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Mean Total Fat (g)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Total Fat (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Total Fat (g)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Total Fat (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 
 # plot mean sugars
 menu_averages %>%
-  ggplot(mapping=aes(x=Category, y=`Mean Sugars (g)`)) +
-    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Mean Sugars (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
+  ggplot(mapping=aes(x=Category, y=`Average Sugars (g)`)) +
+    geom_bar(aes(fill=Category), stat="identity") + ggtitle("Average Amount of Sugars (g) vs. Menu Category") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) 
 ```
   
 
   This looks much nicer, and is easier to convey information to a viewer. But what exactly can we conclude? 
-We can clearly see that the top two offending categories in terms of 
+Clearly, we can see that the Breakfast, Chicken & Fish, and Beef & Pork are the top 3 highest categories for Average Amounts of Sodium and Total Fat, going above 900 mg and 24 grams, respectively. This isn't too unexpected. Surprisingly however, Smoothies & Shakes actually outclasses Beef & Pork when it comes to total Calories, going well over 500. The average amount of sugar for Smoothies & Shakes is also disturbingly high, averaging near 80 grams of sugar. That's equal to over 2 cans of Coca Cola. 
 
 
 
